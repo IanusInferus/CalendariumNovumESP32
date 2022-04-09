@@ -1,0 +1,119 @@
+{
+    "msg": "success",
+    "code": 0,
+    "data": {
+        "location": {
+            "id": "56288",
+            "name": "双流",
+            "path": "中国, 四川, 双流",
+            "longitude": 103.92,
+            "latitude": 30.58,
+            "timezone": 8
+        },
+        "daily": [
+            {
+                "date": "2022/04/03",
+                "high": 19.0,
+                "dayText": "阴",
+                "dayCode": 2,
+                "dayWindDirection": "无持续风向",
+                "dayWindScale": "微风",
+                "low": 12.0,
+                "nightText": "小雨",
+                "nightCode": 7,
+                "nightWindDirection": "无持续风向",
+                "nightWindScale": "微风"
+            },
+            {
+                "date": "2022/04/04",
+                "high": 16.0,
+                "dayText": "小雨",
+                "dayCode": 7,
+                "dayWindDirection": "无持续风向",
+                "dayWindScale": "微风",
+                "low": 12.0,
+                "nightText": "阴",
+                "nightCode": 2,
+                "nightWindDirection": "无持续风向",
+                "nightWindScale": "微风"
+            },
+            {
+                "date": "2022/04/05",
+                "high": 22.0,
+                "dayText": "多云",
+                "dayCode": 1,
+                "dayWindDirection": "无持续风向",
+                "dayWindScale": "微风",
+                "low": 11.0,
+                "nightText": "多云",
+                "nightCode": 1,
+                "nightWindDirection": "无持续风向",
+                "nightWindScale": "微风"
+            },
+            {
+                "date": "2022/04/06",
+                "high": 23.0,
+                "dayText": "多云",
+                "dayCode": 1,
+                "dayWindDirection": "无持续风向",
+                "dayWindScale": "微风",
+                "low": 12.0,
+                "nightText": "晴",
+                "nightCode": 0,
+                "nightWindDirection": "无持续风向",
+                "nightWindScale": "微风"
+            },
+            {
+                "date": "2022/04/07",
+                "high": 26.0,
+                "dayText": "多云",
+                "dayCode": 1,
+                "dayWindDirection": "无持续风向",
+                "dayWindScale": "微风",
+                "low": 14.0,
+                "nightText": "多云",
+                "nightCode": 1,
+                "nightWindDirection": "无持续风向",
+                "nightWindScale": "微风"
+            },
+            {
+                "date": "2022/04/08",
+                "high": 26.0,
+                "dayText": "多云",
+                "dayCode": 1,
+                "dayWindDirection": "无持续风向",
+                "dayWindScale": "微风",
+                "low": 15.0,
+                "nightText": "多云",
+                "nightCode": 1,
+                "nightWindDirection": "无持续风向",
+                "nightWindScale": "微风"
+            },
+            {
+                "date": "2022/04/09",
+                "high": 26.0,
+                "dayText": "多云",
+                "dayCode": 1,
+                "dayWindDirection": "无持续风向",
+                "dayWindScale": "微风",
+                "low": 16.0,
+                "nightText": "多云",
+                "nightCode": 1,
+                "nightWindDirection": "无持续风向",
+                "nightWindScale": "微风"
+            }
+        ],
+        "now": {
+            "precipitation": 0.5,
+            "temperature": 12.9,
+            "pressure": 965.0,
+            "humidity": 100.0,
+            "windDirection": "东北风",
+            "windDirectionDegree": 20.0,
+            "windSpeed": 1.1,
+            "windScale": "微风"
+        },
+        "alarm": [],
+        "lastUpdate": "2022/04/04 02:05"
+    }
+}

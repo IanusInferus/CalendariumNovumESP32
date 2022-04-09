@@ -1,0 +1,3 @@
+https://github.com/nemtrif/utfcpp
+e39907b381d828918bde57cb5a6c3bca01cf0a0b
+https://github.com/nemtrif/utfcpp/archive/v3.1.2.zip

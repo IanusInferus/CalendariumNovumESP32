@@ -54,34 +54,35 @@ void Graphics::DrawRectangle(int x, int y, int width, int height)
     }
 }
 
-void Graphics::DrawRectangleFromImage(int x, int y, int width, int height, const unsigned char* image, int imageWidth, int imageHeight, int imagePosX, int imagePosY)
+void Graphics::DrawRectangleFromImage(int x, int y, int width, int height, int scale, const unsigned char* image, int imageWidth, int imageHeight, int imagePosX, int imagePosY)
 {
-    if ((width <= 0) || (height <= 0)) { return; }
+    if ((width <= 0) || (height <= 0) || (scale <= 0)) { return; }
     auto BufferWidth = GetWidth();
+    auto BufferHeight = GetHeight();
 
-    auto xlSource = std::max(imagePosX, 0);
-    auto xuSource = std::min(imagePosX + width - 1, imageWidth - 1);
-    auto ylSource = std::max(imagePosY, 0);
-    auto yuSource = std::min(imagePosY + height - 1, imageHeight - 1);
-
-    auto xl = std::max(xlSource - imagePosX + x, 0);
-    auto xu = std::min(xuSource - imagePosX + x, BufferWidth - 1);
-    auto yl = std::max(ylSource - imagePosY + y, 0);
-    auto yu = std::min(yuSource - imagePosY + y, GetHeight() - 1);
-
-    for (int j = yl; j <= yu; j += 1)
+    for (int j = 0; j < height; j += 1)
     {
-        int jSource = j - y + imagePosY;
-        for (int i = xl; i <= xu; i += 1)
+        int jSource = imagePosY + j;
+        for (int i = 0; i < width; i += 1)
         {
-            int iSource = i - x + imagePosX;
-            int c = (image[(iSource + jSource * imageWidth) / 8] >> (iSource % 8)) & 1;
-            Buffer[(i + j * BufferWidth) / 8] = Buffer[(i + j * BufferWidth) / 8] | (c << (7 - (i % 8)));
+            int iSource = imagePosX + i;
+            int c = (jSource < 0) || (jSource >= imageHeight) || (iSource < 0) || (iSource >= imageWidth) ? 0 : (image[(iSource + jSource * imageWidth) / 8] >> (iSource % 8)) & 1;
+            for (int oj = 0; oj < scale; oj += 1)
+            {
+                int jDest = y + j * scale + oj;
+                if ((jDest < 0) || (jDest >= BufferHeight)) { continue; }
+                for (int oi = 0; oi < scale; oi += 1)
+                {
+                    int iDest = x + i * scale + oi;
+                    if ((iDest < 0) || (iDest >= BufferWidth)) { continue; }
+                    Buffer[(iDest + jDest * BufferWidth) / 8] = Buffer[(iDest + jDest * BufferWidth) / 8] | (c << (7 - (iDest % 8)));
+                }
+            }
         }
     }
 }
 
-void Graphics::DrawText(int x, int y, const char* text)
+void Graphics::DrawText(int x, int y, const char* text, int scale)
 {
     auto u32Text = utf8ToUtf32(text);
 
@@ -92,7 +93,7 @@ void Graphics::DrawText(int x, int y, const char* text)
         //Serial.println("Draw: " + String(c));
         if (c >= 0x10000)
         {
-            xCurrent += font_glyph_width;
+            xCurrent += font_glyph_width * scale;
             continue;
         }
 
@@ -105,7 +106,7 @@ void Graphics::DrawText(int x, int y, const char* text)
         if (range.first == range.second)
         {
             Serial.println("NoGlyph: " + String(c));
-            xCurrent += font_glyph_width;
+            xCurrent += font_glyph_width * scale;
             continue;
         }
         else
@@ -114,8 +115,8 @@ void Graphics::DrawText(int x, int y, const char* text)
         }
 
         //Serial.println(("Glyph: " + std::to_string(static_cast<int>(c)) + " " + std::to_string(xCurrent) + " " + std::to_string(yCurrent) + " " + std::to_string(d.GlyphWidth) + " " + std::to_string(d.GlyphHeight)).c_str());
-        DrawRectangleFromImage(xCurrent, yCurrent, d.GlyphWidth, d.GlyphHeight, font_bitmap, font_bitmap_width, font_bitmap_height, d.ImagePosX + d.ImageGlyphOffsetX, d.ImagePosY + d.ImageGlyphOffsetY);
-        xCurrent += d.GlyphWidth;
+        DrawRectangleFromImage(xCurrent, yCurrent, d.GlyphWidth, d.GlyphHeight, scale, font_bitmap, font_bitmap_width, font_bitmap_height, d.ImagePosX + d.ImageGlyphOffsetX, d.ImagePosY + d.ImageGlyphOffsetY);
+        xCurrent += d.GlyphWidth * scale;
     }
 }
 

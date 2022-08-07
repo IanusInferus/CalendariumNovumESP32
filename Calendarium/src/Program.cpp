@@ -70,6 +70,7 @@ void update()
     Serial.println(("(Calendarium Gregorianum " + LocalNowStr + ")").c_str());
     Graphics::DrawText(10, 30, NeoLocalNowLongStr.c_str());
     Graphics::DrawText(10, 50, ("(Calendarium Gregorianum " + LocalNowStr + ")").c_str());
+    Graphics::DrawText(120, 100, (std::to_string(NeoLocalNow.Year) + "-" + std::to_string(NeoLocalNow.Day)).c_str(), 4);
 
     HTTPClient http;
     http.begin("http://weather.cma.cn/api/weather/view");
@@ -77,9 +78,12 @@ void update()
     if (httpCode == HTTP_CODE_OK)
     {
         String payload = http.getString();
-        auto WeatherText = GetWeatherText(payload.c_str(), 4096);
+        std::string WeatherText;
+        std::string Temperature;
+        std::tie(WeatherText, Temperature) = GetWeatherText(payload.c_str(), 4096);
         Serial.println(WeatherText.c_str());
         Graphics::DrawText(10, 70, WeatherText.c_str());
+        Graphics::DrawText(120, 160, Temperature.c_str(), 8);
     }
     else
     {

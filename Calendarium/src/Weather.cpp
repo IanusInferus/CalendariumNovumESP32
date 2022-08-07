@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <sstream>
 
-std::string GetWeatherText(std::string Json, int CacheSize)
+std::tuple<std::string, std::string> GetWeatherText(std::string Json, int CacheSize)
 {
     DynamicJsonDocument j(CacheSize);
 
@@ -30,5 +30,8 @@ std::string GetWeatherText(std::string Json, int CacheSize)
 
     std::stringstream ss;
     ss << location << " " << temperature << "℃(" << low << "℃~" << high << "℃) " << description;
-    return ss.str();
+
+    std::stringstream ss2;
+    ss2 << temperature;
+    return std::make_tuple(ss.str(), ss2.str());
 }

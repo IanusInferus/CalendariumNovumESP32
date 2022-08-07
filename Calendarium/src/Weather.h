@@ -1,3 +1,4 @@
 ﻿#include <string>
+#include <tuple>
 
-std::string GetWeatherText(std::string Json, int CacheSize);
+std::tuple<std::string, std::string> GetWeatherText(std::string Json, int CacheSize);

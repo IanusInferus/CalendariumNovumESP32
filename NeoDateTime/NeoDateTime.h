@@ -44,7 +44,9 @@ public:
 	const std::int64_t Nanosecond;
 
 	NeoDateTimeLocal(int Year, int Day, int Hour, int Minute, int Second, std::int64_t Nanosecond);
-	std::string ToLongString();
+	std::string ToShortString();
+	std::string ToShortDateString();
+	std::string ToLongDayString();
 };
 
 std::string TimePointToLocalShortDateString(std::chrono::system_clock::time_point Time, double OffsetAtTime);

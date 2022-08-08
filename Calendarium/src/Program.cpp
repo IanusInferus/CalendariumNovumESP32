@@ -6,6 +6,11 @@
 #include <HTTPClient.h>
 
 #include <chrono>
+#include <sstream>
+#include <iomanip>
+
+RTC_DATA_ATTR bool s_WeatherInfoInitialized = false;
+RTC_DATA_ATTR WeatherInfo s_WeatherInfo = {};
 
 void printLocalTime()
 {
@@ -59,18 +64,19 @@ void update()
     Serial.println();
     Serial.println("Calendarium Novum");
     Graphics::Clear();
-    Graphics::DrawText(10, 10, "Calendarium Novum");
 
 	auto UtcNow = std::chrono::system_clock::now();
 	auto LocalNowStr = TimePointToLocalShortDateString(UtcNow, 7);
 	auto NeoUtcNow = NeoDateTimeUtc::FromTimePoint(UtcNow);
 	auto NeoLocalNow = NeoUtcNow.ToLocal(7);
-	auto NeoLocalNowLongStr = NeoLocalNow.ToLongString();
-    Serial.println(NeoLocalNowLongStr.c_str());
+    auto NeoLocalNowShortDateStr = NeoLocalNow.ToShortDateString();
+	auto NeoLocalNowLongDayStr = NeoLocalNow.ToLongDayString();
+    Serial.println(NeoLocalNowShortDateStr.c_str());
     Serial.println(("(Calendarium Gregorianum " + LocalNowStr + ")").c_str());
-    Graphics::DrawText(10, 30, NeoLocalNowLongStr.c_str());
-    Graphics::DrawText(10, 50, ("(Calendarium Gregorianum " + LocalNowStr + ")").c_str());
-    Graphics::DrawText(120, 100, (std::to_string(NeoLocalNow.Year) + "-" + std::to_string(NeoLocalNow.Day)).c_str(), 4);
+    Graphics::DrawText(180, 10, "Calendarium Novum");
+    Graphics::DrawText(120, 26, NeoLocalNowShortDateStr.c_str(), 4);
+    Graphics::DrawText(128, 90, NeoLocalNowLongDayStr.c_str());
+    Graphics::DrawText(128, 110, ("(Cal. Gregorianum " + LocalNowStr + ")").c_str());
 
     HTTPClient http;
     http.begin("http://weather.cma.cn/api/weather/view");
@@ -80,10 +86,9 @@ void update()
         String payload = http.getString();
         std::string WeatherText;
         std::string Temperature;
-        std::tie(WeatherText, Temperature) = GetWeatherText(payload.c_str(), 4096);
-        Serial.println(WeatherText.c_str());
-        Graphics::DrawText(10, 70, WeatherText.c_str());
-        Graphics::DrawText(120, 160, Temperature.c_str(), 8);
+
+        s_WeatherInfo = ParseWeatherText(payload.c_str(), 4096);
+        s_WeatherInfoInitialized = true;
     }
     else
     {
@@ -91,18 +96,34 @@ void update()
     }
     http.end();
 
+    if (s_WeatherInfoInitialized)
+    {
+        auto i = &s_WeatherInfo;
+        auto LastUpdateText = NeoDateTimeUtc::FromTimePoint(i->LastUpdate).ToLocal(7).ToShortString();
+        std::stringstream sTemperature;
+        sTemperature << std::fixed << std::showpoint << std::setprecision(1) << i->Temperature;
+        auto Temperature = sTemperature.str();
+        std::stringstream sWeatherText1;
+        sWeatherText1 << std::fixed << std::showpoint << std::setprecision(1) << "" << i->Low << "℃～" << i->High << "℃ " << i->Description;
+        auto WeatherText1 = sWeatherText1.str();
+        std::stringstream sWeatherText2;
+        sWeatherText2 << LastUpdateText << " " << i->Location;
+        auto WeatherText2 = sWeatherText2.str();
+        Graphics::DrawText(120, 130, Temperature.c_str(), 8);
+        Graphics::DrawText(160, 250, WeatherText1.c_str());
+        Graphics::DrawText(160, 270, WeatherText2.c_str());
+    }
+
     static std::vector<std::string> DayNames = { "zerodi", "unidi", "duodi", "tridi", "quartidi", "quintidi", "sextidi", "septidi", "octidi", "nonidi" };
     for (int k = 0; k < 10; k += 1)
     {
         if (k == NeoLocalNow.Day % 10)
         {
-            Serial.println((DayNames[k] + " ←").c_str());
-            Graphics::DrawText(10, 90 + k * 20, (DayNames[k] + " ←").c_str());
+            Graphics::DrawText(10, 16 + k * 28, (DayNames[k] + " ←").c_str());
         }
         else
         {
-            Serial.println(DayNames[k].c_str());
-            Graphics::DrawText(10, 90 + k * 20, DayNames[k].c_str());
+            Graphics::DrawText(10, 16 + k * 28, DayNames[k].c_str());
         }
     }
 

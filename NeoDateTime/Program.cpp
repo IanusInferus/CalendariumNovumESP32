@@ -9,7 +9,8 @@ int main()
 
 	auto NeoUtcNow = NeoDateTimeUtc::FromTimePoint(UtcNow);
 	auto NeoLocalNow = NeoUtcNow.ToLocal(7);
-	auto NeoLocalNowLongStr = NeoLocalNow.ToLongString();
+	auto NeoLocalNowShortStr = NeoLocalNow.ToShortString();
+	auto NeoLocalNowLongDayStr = NeoLocalNow.ToLongDayString();
 
 	return 0;
 }

@@ -93,14 +93,8 @@ NeoDateTimeUtc NeoDateTimeUtc::FromTimePoint(std::chrono::system_clock::time_poi
 
 std::chrono::system_clock::time_point NeoDateTimeUtc::ToTimePoint()
 {
-    auto Epoch = static_cast<std::chrono::system_clock::time_point>(static_cast<days>(days_from_civil(2022, 12, 21))); //2022-12-21T21:48:01Z
-    Epoch += static_cast<std::chrono::hours>(21);
-    Epoch += static_cast<std::chrono::minutes>(48);
-    Epoch += static_cast<std::chrono::seconds>(01);
-    const double TerraTropicalPeriod = 365.2421897;
-
     auto YearDiff = Year - 2023;
-    auto YearStart = Epoch + days(static_cast<int>(std::floor(TerraTropicalPeriod * YearDiff)));
+    auto YearStart = static_cast<std::chrono::system_clock::time_point>(static_cast<days>(days_from_civil(2022 + YearDiff, 12, 21)));
     auto Result = YearStart + days(Day) + std::chrono::hours(Hour) + std::chrono::minutes(Minute) + std::chrono::seconds(Second) + std::chrono::microseconds(Nanosecond / 1000);
     return Result;
 }
@@ -116,17 +110,47 @@ NeoDateTimeLocal::NeoDateTimeLocal(int Year, int Day, int Hour, int Minute, int 
 {
 }
 
-std::string NeoDateTimeLocal::ToLongString()
+std::string NeoDateTimeLocal::ToShortString()
 {
-    static std::vector<std::string> DayNames = { "zerodi", "unidi", "duodi", "tridi", "quartidi", "quintidi", "sextidi", "septidi", "octidi", "nonidi" };
-
     auto y = std::to_string(Year);
     auto d = std::to_string(Day);
     if (d.size() < 3)
     {
         d = std::string(3 - d.size(), '0') + d;
     }
-    return y + "-" + d + ", decade " + std::to_string(Day / 10) + " " + DayNames[Day % 10] + ", 第" + std::to_string(Day / 10) + "旬第" + std::to_string(Day % 10) + "天";
+    auto h = std::to_string(Hour);
+    if (h.size() < 2)
+    {
+        h = std::string(2 - h.size(), '0') + h;
+    }
+    auto m = std::to_string(Minute);
+    if (m.size() < 2)
+    {
+        m = std::string(2 - m.size(), '0') + m;
+    }
+    return y + "-" + d + " " + h + ":" + m;
+}
+
+std::string NeoDateTimeLocal::ToShortDateString()
+{
+    auto y = std::to_string(Year);
+    auto d = std::to_string(Day);
+    if (d.size() < 3)
+    {
+        d = std::string(3 - d.size(), '0') + d;
+    }
+    return y + "-" + d;
+}
+
+std::string NeoDateTimeLocal::ToLongDayString()
+{
+    static std::vector<std::string> DayNames = { "zerodi", "unidi", "duodi", "tridi", "quartidi", "quintidi", "sextidi", "septidi", "octidi", "nonidi" };
+    auto d = std::to_string(Day);
+    if (d.size() < 3)
+    {
+        d = std::string(3 - d.size(), '0') + d;
+    }
+    return "decade " + std::to_string(Day / 10) + " " + DayNames[Day % 10] + ", 第" + std::to_string(Day / 10) + "旬第" + std::to_string(Day % 10) + "天";
 }
 
 std::string TimePointToLocalShortDateString(std::chrono::system_clock::time_point Time, double OffsetAtTime)

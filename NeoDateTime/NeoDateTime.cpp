@@ -53,6 +53,12 @@ static std::tuple<Int, unsigned, unsigned> civil_from_days(Int z)
 
 typedef std::chrono::duration<int, std::ratio<86400>> days;
 
+static std::chrono::system_clock::time_point GetDate(std::chrono::system_clock::time_point Time)
+{
+    auto DaysFromEpoch = std::chrono::duration_cast<days>(Time.time_since_epoch());
+    return std::chrono::system_clock::time_point(DaysFromEpoch);
+}
+
 NeoDateTimeUtc::NeoDateTimeUtc(int Year, int Day, int Hour, int Minute, int Second, std::int64_t Nanosecond)
 	: Year(Year), Day(Day), Hour(Hour), Minute(Minute), Second(Second), Nanosecond(Nanosecond)
 {
@@ -67,12 +73,12 @@ NeoDateTimeUtc NeoDateTimeUtc::FromTimePoint(std::chrono::system_clock::time_poi
     const double TerraTropicalPeriod = 365.2421897;
 
     auto YearDiff = static_cast<int>(std::floor(std::chrono::duration_cast<std::chrono::duration<double>>(Time - Epoch).count() / (24 * 3600) / TerraTropicalPeriod));
-    auto YearStart = static_cast<std::chrono::system_clock::time_point>(static_cast<days>(days_from_civil(2022 + YearDiff, 12, 21)));
-    auto YearStart2 = static_cast<std::chrono::system_clock::time_point>(static_cast<days>(days_from_civil(2022 + YearDiff + 1, 12, 21)));
-    if (Time >= YearStart2)
+    auto YearStart = GetDate(Epoch + std::chrono::duration_cast<std::chrono::system_clock::duration>(std::chrono::duration<double>(YearDiff * TerraTropicalPeriod * 24 * 3600)));
+    auto YearStartNext = GetDate(Epoch + std::chrono::duration_cast<std::chrono::system_clock::duration>(std::chrono::duration<double>((YearDiff + 1) * TerraTropicalPeriod * 24 * 3600)));
+    if (Time >= YearStartNext)
     {
         YearDiff += 1;
-        YearStart = YearStart2;
+        YearStart = YearStartNext;
     }
     auto Year = 2023 + YearDiff;
     auto Day = static_cast<int>(std::floor(std::chrono::duration_cast<std::chrono::duration<double>>(Time - YearStart).count() / (24 * 3600)));
